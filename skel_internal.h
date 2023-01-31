@@ -55,6 +55,13 @@ struct bpf_loader_ctx {
 	__u32 log_level;
 	__u32 log_size;
 	__u64 log_buf;
+
+  __u32 buf_size;
+  __u64 buf; 
+
+  __u32 map_fd;
+  __u64 map;
+  __u64 key;
 };
 
 struct bpf_load_and_run_opts {
@@ -331,6 +338,9 @@ static inline int bpf_load_and_run(struct bpf_load_and_run_opts *opts)
 
 	memset(&attr, 0, sizeof(attr));
 	attr.test.prog_fd = prog_fd;
+  opts->ctx->key = (long) &key;
+  opts->ctx->map_fd = map_fd;
+  opts->ctx->map = (long) bpf_map_get(map_fd);
 	attr.test.ctx_in = (long) opts->ctx;
 	attr.test.ctx_size_in = opts->ctx->sz;
 	err = skel_sys_bpf(BPF_PROG_RUN, &attr, sizeof(attr));
